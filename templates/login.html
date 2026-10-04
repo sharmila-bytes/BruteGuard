@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BruteGuard | Secure Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="auth-shell">
+    <section class="brand-panel">
+        <div class="brand-mark">BG</div>
+        <p class="eyebrow">SECURE AUTHENTICATION</p>
+        <h1>BruteGuard</h1>
+        <p class="hero-copy">Brute-Force Attack &amp; Defense Simulator</p>
+        <p class="muted hero-muted">A simple security system that detects repeated login failures, temporarily blocks suspicious access, raises an alert, and records security events.</p>
+        <div class="security-badge"><span class="pulse-dot"></span> Protection system active</div>
+    </section>
+
+    <section class="login-panel">
+        <div class="panel-top"><span class="status-dot"></span><span>Protected Login</span></div>
+        <h2>Welcome back</h2>
+        <p class="muted">Sign in to access the security dashboard.</p>
+
+        {% if message %}
+        <div class="alert danger">
+            <strong>{{ "Account Temporarily Locked" if locked else "Login Failed" }}</strong>
+            <span>{{ message }}</span>
+        </div>
+        {% endif %}
+
+        {% if locked %}
+        <div class="lock-card">
+            <div class="lock-icon">🔒</div>
+            <div>
+                <strong>Account temporarily blocked</strong>
+                <p>Repeated failures reached the security threshold.</p>
+            </div>
+            <div class="countdown" id="countdown" data-seconds="{{ remaining }}">{{ remaining }}s</div>
+        </div>
+        <p class="security-note">The account will automatically unlock after the timer ends.</p>
+        {% else %}
+        <form method="POST" class="login-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" placeholder="Enter username" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required>
+
+            <button type="submit">Sign in <span>→</span></button>
+        </form>
+        <p class="security-note">Security control: repeated failed attempts trigger temporary account locking.</p>
+        {% endif %}
+
+        <div class="demo-note">
+            <span>Demo credentials</span>
+            <code>admin / admin123</code>
+        </div>
+    </section>
+</main>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

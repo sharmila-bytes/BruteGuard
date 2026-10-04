@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BruteGuard | Security Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-body">
+<header class="topbar">
+    <div class="brand-inline"><div class="brand-mark small">BG</div><strong>BruteGuard</strong></div>
+    <div class="top-actions"><span class="live-badge"><i></i> System Active</span><span class="user-chip">{{ username }}</span><a href="{{ url_for('logout') }}">Logout</a></div>
+</header>
+
+<main class="dashboard">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">SECURITY MONITOR</p>
+            <h1>Authentication Defense Dashboard</h1>
+            <p class="muted">Monitor login activity, failed attempts, alerts, and temporary account protection.</p>
+        </div>
+        <div class="protection-state {{ 'locked-state' if locked else '' }}"><span></span>{{ 'ACCOUNT LOCKED' if locked else 'PROTECTION ACTIVE' }}</div>
+    </section>
+
+    <section class="feature-grid">
+        <article class="feature-card"><span class="feature-number">01</span><div class="feature-icon">◉</div><h3>Login Attempt</h3><p>Monitor each authentication request.</p></article>
+        <article class="feature-card"><span class="feature-number">02</span><div class="feature-icon danger-icon">!</div><h3>Failure Detection</h3><p>Detect repeated invalid credentials.</p></article>
+        <article class="feature-card"><span class="feature-number">03</span><div class="feature-icon lock-icon-small">⌁</div><h3>5-Attempt Lock</h3><p>Temporarily block suspicious access.</p></article>
+        <article class="feature-card"><span class="feature-number">04</span><div class="feature-icon alert-icon">●</div><h3>Security Alert</h3><p>Generate alerts and log events.</p></article>
+    </section>
+
+    <section class="stats-grid four">
+        <article class="stat-card"><span>Current Failed Attempts</span><strong>{{ failed_attempts }}/{{ max_attempts }}</strong><small>Resets after successful login or lock expiry</small></article>
+        <article class="stat-card"><span>Failed Logins</span><strong>{{ failed_count }}</strong><small>Recorded security events</small></article>
+        <article class="stat-card"><span>Security Alerts</span><strong>{{ alert_count }}</strong><small>Brute-force alerts generated</small></article>
+        <article class="stat-card"><span>Successful Logins</span><strong>{{ successful_count }}</strong><small>Valid credentials accepted</small></article>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="card">
+            <div class="card-heading">
+                <div><p class="eyebrow">EVENT MONITOR</p><h2>Security Log</h2></div>
+                <span class="pill">{{ logs|length }} events</span>
+            </div>
+            {% if logs %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Time</th><th>Event</th><th>Status</th><th>Details</th><th>Source</th></tr></thead>
+                    <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.time }}</td>
+                        <td>{{ log.event }}</td>
+                        <td><span class="tag {{ log.status|lower }}">{{ log.status }}</span></td>
+                        <td>{{ log.details }}</td>
+                        <td>{{ log.ip }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state"><div>🛡️</div><strong>No security events yet</strong><span>Login activity will appear here.</span></div>
+            {% endif %}
+        </article>
+
+        <aside class="card defense-card">
+            <p class="eyebrow">DEFENSE FLOW</p>
+            <h2>How BruteGuard Defends</h2>
+            <div class="defense-step"><b>1</b><span>Accept a login attempt and validate the credentials.</span></div>
+            <div class="defense-step"><b>2</b><span>Count failed attempts internally without exposing the count to the attacker.</span></div>
+            <div class="defense-step"><b>3</b><span>After 5 failures, raise a brute-force alert and lock the account for 30 seconds.</span></div>
+            <div class="defense-step"><b>4</b><span>Record the event and reset protection after the temporary lock expires.</span></div>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
